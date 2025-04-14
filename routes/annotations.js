@@ -282,6 +282,8 @@ router.get('/annotation', (req, res) => {
 * @param class: source class id
 * @param content: text content of annotation
 * @param range: json for location range
+* @param drawAnnotationDraftRect: HTML rect element for the draw annotation draft
+* @param drawAnnotationDraftSvg: SVG element in which to insert the draft rect
 * @param author: id of author
 * @param tags: list of ids of tag types
 * @param userTags: list of ids of users tagged
@@ -292,8 +294,6 @@ router.get('/annotation', (req, res) => {
 * @param bookmark: boolean
 */
 router.post('/annotation', async (req, res) => {
-    const range = req.body.range
-
     const source = await Source.findOne({
         where: { [Op.and]: [{ filepath: req.body.url }, { class_id: req.body.class }] },
         include: [{
@@ -338,8 +338,18 @@ router.post('/annotation', async (req, res) => {
     let annotation
     let threadId
     const location = await Location.create({ source_id: source.id })
+
+    let htmlLoc; 
+    if (req.body.drawAnnotationDraftRect) {
+        const draftRect = req.body.drawAnnotationDraftRect
+        const imageSvg = req.body.drawAnnotationDraftSvg 
+        htmlLoc = { start_node: imageSvg, end_node: imageSvg, start_offset: draftRect.x_offset, end_offset: draftRect.y_offset, width: draftRect.width, height: draftRect.height, location_id: location.id}
+    } else {
+        const range = req.body.range
+        htmlLoc = { start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }
+    }
     await Promise.all([
-        HtmlLocation.create({ start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }),
+        HtmlLocation.create(htmlLoc),
         Thread.create({ location_id: location.id, HeadAnnotation: { content: req.body.content, visibility: req.body.visibility, anonymity: req.body.anonymity, endorsed: req.body.endorsed, author_id: req.user.id } },
             { include: [{ association: 'HeadAnnotation' }] })
             .then(thread => {
@@ -387,6 +397,8 @@ router.post('/annotation', async (req, res) => {
 * @param class: source class id
 * @param content: text content of annotation
 * @param range: json for location range
+* @param drawAnnotationDraftRect: HTML rect element for the draw annotation draft
+* @param drawAnnotationDraftSvg: SVG element in which to insert the draft rect
 * @param author: id of author
 * @param tags: list of ids of tag types
 * @param userTags: list of ids of users tagged
@@ -400,7 +412,6 @@ router.post('/media/annotation', upload.single("file"), async (req, res) => {
     try {
         const filepath = `/media/${req.file.filename}`
         const body = JSON.parse(req.body.annotation)
-        const range = body.range
 
         const source = await Source.findOne({
             where: { [Op.and]: [{ filepath: body.url }, { class_id: body.class }] },
@@ -445,8 +456,17 @@ router.post('/media/annotation', upload.single("file"), async (req, res) => {
 
         const location = await Location.create({ source_id: source.id })
 
+        let htmlLoc; 
+        if (req.body.drawAnnotationDraftRect) {
+            const draftRect = req.body.drawAnnotationDraftRect
+            const imageSvg = req.body.drawAnnotationDraftSvg 
+            htmlLoc = { start_node: imageSvg, end_node: imageSvg, start_offset: draftRect.x_offset, end_offset: draftRect.y_offset, width: draftRect.width, height: draftRect.height, location_id: location.id}
+        } else {
+            const range = req.body.range
+            htmlLoc = { start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }
+        }
         const [htmlLocation, thread] = await Promise.all([
-            HtmlLocation.create({ start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }),
+            HtmlLocation.create(htmlLoc),
             Thread.create({ location_id: location.id, HeadAnnotation: { content: body.content, visibility: body.visibility, anonymity: body.anonymity, author_id: req.user.id } }, { include: [{ association: 'HeadAnnotation' }] })
         ])
 

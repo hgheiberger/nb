@@ -20,7 +20,15 @@ const htmlLocation = (sequelize, DataTypes) => {
     end_offset:{
       type: DataTypes.INTEGER,
       allowNull: false
-    }
+    },
+    width:{
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    height:{
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
   },
   {
     classMethods:{

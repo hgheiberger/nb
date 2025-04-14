@@ -151,16 +151,26 @@ module.exports = function (models) {
     },
     createAnnotation: function (location, head, instructors, tas, sessionUserId, follows) {
       let annotation = {}
-      let range = location.HtmlLocation;
+      let htmlLoc = location.HtmlLocation;
 
       try {
         annotation.id = head.id;
-        annotation.range = {
-          start: range.start_node,
-          end: range.end_node,
-          startOffset: range.start_offset,
-          endOffset: range.end_offset
-        };
+        if (htmlLoc.width) {
+          annotation.drawAnnotationDraftRect = {
+            x: htmlLoc.start_offset,
+            y: htmlLoc.end_offset,
+            width: htmlLoc.width,
+            height: htmlLoc.height,
+          }
+          annotation.drawAnnotationDraftSvg = htmlLoc.start_node
+        } else {
+          annotation.range = {
+            start: htmlLoc.start_node,
+            end: htmlLoc.end_node,
+            startOffset: htmlLoc.start_offset,
+            endOffset: htmlLoc.end_offset
+          };
+        }
         annotation.parent = null;
         annotation.timestamp = head.dataValues.created_at;
         annotation.author = head.Author.id;
@@ -197,16 +207,26 @@ module.exports = function (models) {
     },
     createAnnotationFromThread: function (htmlLocation, head, seenUsers, instructors, tas, sessionUserId, follows) {
       let annotation = {}
-      let range = htmlLocation;
+      let htmlLoc = htmlLocation;
 
       try {
         annotation.id = head.id;
-        annotation.range = {
-          start: range.start_node,
-          end: range.end_node,
-          startOffset: range.start_offset,
-          endOffset: range.end_offset
-        };
+        if (htmlLoc.width) {
+          annotation.drawAnnotationDraftRect = {
+            x: htmlLoc.start_offset,
+            y: htmlLoc.end_offset,
+            width: htmlLoc.width,
+            height: htmlLoc.height,
+          }
+          annotation.drawAnnotationDraftSvg = htmlLoc.start_node
+        } else {
+          annotation.range = {
+            start: htmlLoc.start_node,
+            end: htmlLoc.end_node,
+            startOffset: htmlLoc.start_offset,
+            endOffset: htmlLoc.end_offset
+          };
+        }
         annotation.parent = null;
         annotation.timestamp = head.dataValues.created_at;
         annotation.author = head.Author.id;
