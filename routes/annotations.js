@@ -282,8 +282,8 @@ router.get('/annotation', (req, res) => {
 * @param class: source class id
 * @param content: text content of annotation
 * @param range: json for location range
-* @param drawAnnotationDraftRect: HTML rect element for the draw annotation draft
-* @param drawAnnotationDraftSvg: SVG element in which to insert the draft rect
+* @param drawAnnotationRect: HTML rect element for the draw annotation
+* @param drawAnnotationSvg: SVG element in which to insert the rect
 * @param author: id of author
 * @param tags: list of ids of tag types
 * @param userTags: list of ids of users tagged
@@ -340,10 +340,10 @@ router.post('/annotation', async (req, res) => {
     const location = await Location.create({ source_id: source.id })
 
     let htmlLoc; 
-    if (req.body.drawAnnotationDraftRect) {
-        const draftRect = req.body.drawAnnotationDraftRect
-        const imageSvg = req.body.drawAnnotationDraftSvg 
-        htmlLoc = { start_node: imageSvg, end_node: imageSvg, start_offset: draftRect.x_offset, end_offset: draftRect.y_offset, width: draftRect.width, height: draftRect.height, location_id: location.id}
+    if (req.body.drawAnnotationRect) {
+        const rect = req.body.drawAnnotationRect
+        const imageSvg = req.body.drawAnnotationSvg 
+        htmlLoc = { start_node: imageSvg, end_node: imageSvg, start_offset: rect.x_offset, end_offset: rect.y_offset, width: rect.width, height: rect.height, location_id: location.id}
     } else {
         const range = req.body.range
         htmlLoc = { start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }
@@ -397,8 +397,8 @@ router.post('/annotation', async (req, res) => {
 * @param class: source class id
 * @param content: text content of annotation
 * @param range: json for location range
-* @param drawAnnotationDraftRect: HTML rect element for the draw annotation draft
-* @param drawAnnotationDraftSvg: SVG element in which to insert the draft rect
+* @param drawAnnotationRect: HTML rect element for the draw annotation
+* @param drawAnnotationSvg: SVG element in which to insert the rect
 * @param author: id of author
 * @param tags: list of ids of tag types
 * @param userTags: list of ids of users tagged
@@ -457,10 +457,10 @@ router.post('/media/annotation', upload.single("file"), async (req, res) => {
         const location = await Location.create({ source_id: source.id })
 
         let htmlLoc; 
-        if (req.body.drawAnnotationDraftRect) {
-            const draftRect = req.body.drawAnnotationDraftRect
-            const imageSvg = req.body.drawAnnotationDraftSvg 
-            htmlLoc = { start_node: imageSvg, end_node: imageSvg, start_offset: draftRect.x_offset, end_offset: draftRect.y_offset, width: draftRect.width, height: draftRect.height, location_id: location.id}
+        if (req.body.drawAnnotationRect) {
+            const rect = req.body.drawAnnotationRect
+            const imageSvg = req.body.drawAnnotationSvg 
+            htmlLoc = { start_node: imageSvg, end_node: imageSvg, start_offset: rect.x_offset, end_offset: rect.y_offset, width: rect.width, height: rect.height, location_id: location.id}
         } else {
             const range = req.body.range
             htmlLoc = { start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }

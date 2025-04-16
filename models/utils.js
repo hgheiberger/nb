@@ -156,13 +156,13 @@ module.exports = function (models) {
       try {
         annotation.id = head.id;
         if (htmlLoc.width) {
-          annotation.drawAnnotationDraftRect = {
-            x: htmlLoc.start_offset,
-            y: htmlLoc.end_offset,
+          annotation.drawAnnotationRect = {
+            x_offset: htmlLoc.start_offset,
+            y_offset: htmlLoc.end_offset,
             width: htmlLoc.width,
             height: htmlLoc.height,
           }
-          annotation.drawAnnotationDraftSvg = htmlLoc.start_node
+          annotation.drawAnnotationSvg = htmlLoc.start_node
         } else {
           annotation.range = {
             start: htmlLoc.start_node,
@@ -212,13 +212,13 @@ module.exports = function (models) {
       try {
         annotation.id = head.id;
         if (htmlLoc.width) {
-          annotation.drawAnnotationDraftRect = {
-            x: htmlLoc.start_offset,
-            y: htmlLoc.end_offset,
+          annotation.drawAnnotationRect = {
+            x_offset: htmlLoc.start_offset,
+            y_offset: htmlLoc.end_offset,
             width: htmlLoc.width,
             height: htmlLoc.height,
           }
-          annotation.drawAnnotationDraftSvg = htmlLoc.start_node
+          annotation.drawAnnotationSvg = htmlLoc.start_node
         } else {
           annotation.range = {
             start: htmlLoc.start_node,
