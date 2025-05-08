@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html dir="ltr" mozdisallowselectionprint>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="google" content="notranslate">
+    <meta name="robots" content="noindex,nofollow">
+    <title>NB Video Viewer</title>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .viewerContainer {
+            width: calc(100vw - 300px);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .viewerContainerWithMargin {
+            width: calc(100vw - 520px);
+        }
+
+        #loadingNB {
+            position: absolute;
+            top: 50%;
+            left: calc(100vw - 290px);
+            font-size: large;
+            font-weight: bold;
+            text-align: center;
+            font-family: monospace;
+            color: #4a2270;
+        }
+
+        .video-annotation-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: auto;
+            width: calc((100vw - 300px) * 0.8);
+        }
+        
+        .video-annotation-wrapper img {
+            display: block;
+            width: 100%;
+            z-index: 2;
+            opacity: 0;
+        }
+
+        .video-annotation-wrapper svg {
+            display: block;
+            width: 100%;
+            pointer-events: none;
+        }
+        
+        
+        .video-annotation-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .video-annotation-wrapper iframe {
+            width: 100%;
+        }
+
+        .mejs-container {
+            width: 100% !important;
+        }
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.13.2/js/mediaelement-and-player.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.13.2/css/mediaelementplayer.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+
+<body tabindex="1">
+    <div id="viewerContainer" class="viewerContainer">
+        <div id="video-annotation-wrapper" class="video-annotation-wrapper">
+            <video id="viewer" preload="preload" autoplay="autoplay">
+                <source type="video/youtube" src="https://www.youtube.com/watch?v=23oHqNEqRyo" />
+            </video>
+        </div>
+    </div>
+
+    <div id="loadingNB">Loading nb... <br> (feel free to start reading!)</div>
+</body>
+
+<script type="text/javascript">
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const DEFAULT_URL = `uploads/${urlParams.get('id')}`
+    run()
+
+    async function run() {
+        const res = await axios.get('/api/nb/config')
+        const configs = res.data
+
+        if (configs['SPOTLIGHT_MARGIN'] === 'true') {
+            // change page size
+            const elm = document.getElementById("viewerContainer")
+            elm.classList.remove('viewerContainer')
+            elm.classList.add('viewerContainerWithMargin')
+        }
+
+        buildPDF()
+    }
+
+    function buildPDF() {
+
+        // Todo: If rendered, load sidebar
+        if (true){
+            let nbBundle = window.location.host.includes('127.0.0.1') ? "https://127.0.0.1:3001/js/bundle.js" : window.location.protocol + "//" + window.location.host + "/client/js/bundle.js"
+            console.log(nbBundle)
+            let s = document.createElement('script'); s.src = nbBundle; document.body.append(s);
+            document.getElementById("loadingNB").remove()
+        }
+    }
+
+        
+
+
+</script>
+
+</html>
