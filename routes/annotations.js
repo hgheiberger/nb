@@ -284,6 +284,8 @@ router.get('/annotation', (req, res) => {
 * @param range: json for location range
 * @param drawAnnotationRect: HTML rect element for the draw annotation
 * @param drawAnnotationSvg: SVG element in which to insert the rect
+* @param videoAnnotationStartTime: start time of the video annotation
+* @param videoAnnotationEndTime: end time of the video annotation
 * @param author: id of author
 * @param tags: list of ids of tag types
 * @param userTags: list of ids of users tagged
@@ -348,6 +350,12 @@ router.post('/annotation', async (req, res) => {
         const range = req.body.range
         htmlLoc = { start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }
     }
+
+    if (req.body.videoAnnotationStartTime) {
+        htmlLoc.start_time = req.body.videoAnnotationStartTime
+        htmlLoc.end_time = req.body.videoAnnotationEndTime
+    }
+
     await Promise.all([
         HtmlLocation.create(htmlLoc),
         Thread.create({ location_id: location.id, HeadAnnotation: { content: req.body.content, visibility: req.body.visibility, anonymity: req.body.anonymity, endorsed: req.body.endorsed, author_id: req.user.id } },
@@ -399,6 +407,8 @@ router.post('/annotation', async (req, res) => {
 * @param range: json for location range
 * @param drawAnnotationRect: HTML rect element for the draw annotation
 * @param drawAnnotationSvg: SVG element in which to insert the rect
+* @param videoAnnotationStartTime: start time of the video annotation
+* @param videoAnnotationEndTime: end time of the video annotation
 * @param author: id of author
 * @param tags: list of ids of tag types
 * @param userTags: list of ids of users tagged
@@ -465,6 +475,12 @@ router.post('/media/annotation', upload.single("file"), async (req, res) => {
             const range = req.body.range
             htmlLoc = { start_node: range.start, end_node: range.end, start_offset: range.startOffset, end_offset: range.endOffset, location_id: location.id }
         }
+
+        if (req.body.videoAnnotationStartTime) {
+            htmlLoc.start_time = req.body.videoAnnotationStartTime
+            htmlLoc.end_time = req.body.videoAnnotationEndTime
+        }
+
         const [htmlLocation, thread] = await Promise.all([
             HtmlLocation.create(htmlLoc),
             Thread.create({ location_id: location.id, HeadAnnotation: { content: body.content, visibility: body.visibility, anonymity: body.anonymity, author_id: req.user.id } }, { include: [{ association: 'HeadAnnotation' }] })

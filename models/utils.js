@@ -171,6 +171,11 @@ module.exports = function (models) {
             endOffset: htmlLoc.end_offset
           };
         }
+        if (htmlLoc.start_time) {
+          annotation.videoAnnotationStartTime = htmlLoc.start_time
+          annotation.videoAnnotationEndTime = htmlLoc.end_time
+        }
+
         annotation.parent = null;
         annotation.timestamp = head.dataValues.created_at;
         annotation.author = head.Author.id;
@@ -226,6 +231,10 @@ module.exports = function (models) {
             startOffset: htmlLoc.start_offset,
             endOffset: htmlLoc.end_offset
           };
+        }
+        if (htmlLoc.start_time) {
+          annotation.videoAnnotationStartTime = htmlLoc.start_time
+          annotation.videoAnnotationEndTime = htmlLoc.end_time
         }
         annotation.parent = null;
         annotation.timestamp = head.dataValues.created_at;
