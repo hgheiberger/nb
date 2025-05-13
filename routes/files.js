@@ -80,6 +80,24 @@ router.post('/file/:id', (req, res) => {
 
 /**
  * Creates child file of current directory
+ * @name POST/api/files/fileVideo/:id
+ * @param id: id of parent directory
+ * @param name: name of child file
+ * @param url: url of child file, if html
+ */
+router.post('/fileVideo/:id', (req, res) => {
+  let url = req.headers.origin + "/nb_video.html?src=" + req.body.url
+  utils.createFile(req.params.id, req.body.name, url).then((child) => {
+    if(!child) console.log("NO CHILD!")
+    console.log(child)
+    res.status(200).json(child);
+  });
+  
+  
+});
+
+/**
+ * Creates child file of current directory
  * @name POST/api/files/filePdf/:id
  * @param id: id of parent directory
  * @param name: name of child file

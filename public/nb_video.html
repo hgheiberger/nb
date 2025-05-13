@@ -69,8 +69,21 @@
             width: 100%;
         }
 
+        .video-annotation-wrapper video {
+            width: 100%;
+        }
+
         .mejs-container {
             width: 100% !important;
+        }
+
+        .mejs-overlay {
+            width: 100% !important;
+        }
+
+        #alert {
+            color: red;
+            font-weight: bold;
         }
 
     </style>
@@ -81,10 +94,11 @@
 </head>
 
 <body tabindex="1">
+    <p id="alert"></p>
     <div id="viewerContainer" class="viewerContainer">
         <div id="video-annotation-wrapper" class="video-annotation-wrapper">
             <video id="viewer" preload="preload" autoplay="autoplay">
-                <source type="video/youtube" src="https://www.youtube.com/watch?v=23oHqNEqRyo" />
+                <source id="source" />
             </video>
         </div>
     </div>
@@ -95,8 +109,28 @@
 <script type="text/javascript">
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const DEFAULT_URL = `uploads/${urlParams.get('id')}`
-    run()
+    const videoUrl = `${urlParams.get('src')}`
+    const sourceNode = document.getElementById('source')
+    let runNb = true
+
+    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+        sourceNode.type = 'video/youtube'
+    } else if (videoUrl.endsWith('.mp4')) {
+        console.log("mp4")
+        sourceNode.type = 'video/mp4';
+    } else if (videoUrl.endsWith('.webm')) {
+        console.log("mp4")
+        sourceNode.type = 'video/webm';
+    } else {
+        console.log("alert")
+        const alert = document.getElementById("alert")
+        alert.innerHTML = "This video format is currently not supported.  Please use youtube, mp4, or webm links."
+        runNb = false
+    }
+    if (runNb)  { 
+        sourceNode.src = videoUrl;
+        run()
+    }
 
     async function run() {
         const res = await axios.get('/api/nb/config')
@@ -109,18 +143,14 @@
             elm.classList.add('viewerContainerWithMargin')
         }
 
-        buildPDF()
+        launchNb()
     }
 
-    function buildPDF() {
-
-        // Todo: If rendered, load sidebar
-        if (true){
-            let nbBundle = window.location.host.includes('127.0.0.1') ? "https://127.0.0.1:3001/js/bundle.js" : window.location.protocol + "//" + window.location.host + "/client/js/bundle.js"
-            console.log(nbBundle)
-            let s = document.createElement('script'); s.src = nbBundle; document.body.append(s);
-            document.getElementById("loadingNB").remove()
-        }
+    function launchNb() {
+        let nbBundle = window.location.host.includes('127.0.0.1') || window.location.host.includes('localhost')? "https://127.0.0.1:3001/js/bundle.js" : window.location.protocol + "//" + window.location.host + "/client/js/bundle.js"
+        console.log(nbBundle)
+        let s = document.createElement('script'); s.src = nbBundle; document.body.append(s);
+        document.getElementById("loadingNB").remove()
     }
 
         

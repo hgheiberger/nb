@@ -165,6 +165,15 @@
     </div>
     <br>
     <div v-if="userType === 'instructor' && !showDeleted" class="add-file">
+      <h3>New Video File</h3>
+      <label for="new-video-file-name">Name:</label>
+      <input v-model='newVideoFile.name' type='text' id="new-video-file-name">
+      <label for="new-video-file-url">URL:</label>
+      <input v-model='newVideoFile.url' placeholder="e.g., youtube, mp4, webm links" type='text' id="new-video-file-url">
+      <button @click="addVideoFile" :disabled="!newVideoFileEnabled">Add</button>
+    </div>
+    <br>
+    <div v-if="userType === 'instructor' && !showDeleted" class="add-file">
         <h3>New Pdf File</h3>
         <label for="new-pdf-file-name">Name:</label>
         <input v-model='newPdfFile.name' type='text' id="new-pdf-file-name">
@@ -267,6 +276,10 @@
           name: "",
           url: "",
         },
+        newVideoFile: {
+          name: "",
+          url: "",
+        },
         newPdfFile: {
           name: ""
         },
@@ -290,6 +303,9 @@
       },
       newFileEnabled: function() {
         return this.newFile.name.length > 0 && this.newFile.url.length > 0
+      },
+      newVideoFileEnabled: function() {
+        return this.newVideoFile.name.length > 0 && this.newVideoFile.url.length > 0
       },
       newPdfFileEnabled: function() {
         return this.pdfFileUpload && this.newPdfFile.name.length > 0
@@ -347,6 +363,32 @@
         axios.post(`/api/files/file/${this.currentDir.id}`, this.newFile, headers)
           .then((result) =>{
             this.newFile = { name: "", url: "" }
+            //console.log(result)
+            if(!result.data.error) {
+              this.loadFiles();
+              Vue.notify({
+              group: 'addFile',
+              title: 'Your file was added',
+              type: 'success',
+              })
+            }
+            else {
+              console.log("NO FILE")
+              Vue.notify({
+              group: 'addFile',
+              title: 'Your file was not added',
+              type: 'error',
+              text: 'You have added this file in the past. Try looking through your files (or deleted files) for it!'
+              })
+            }
+          })
+      },
+      addVideoFile: function() {
+        const token = localStorage.getItem("nb.user");
+        const headers = { headers: { Authorization: 'Bearer ' + token }}
+        axios.post(`/api/files/fileVideo/${this.currentDir.id}`, this.newVideoFile, headers)
+          .then((result) =>{
+            this.newVideoFile = { name: "", url: "" }
             //console.log(result)
             if(!result.data.error) {
               this.loadFiles();
