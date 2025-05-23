@@ -23,6 +23,18 @@
             width: calc(100vw - 520px);
         }
 
+        .pdf-annotation-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .pdf-annotation-overlay div {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         #loadingNB {
             position: absolute;
             top: 50%;
@@ -205,6 +217,17 @@
                 eventBus.on('pagerender', (evt) => {
                     // If we've rendered the last page, load NB
                     if (evt.pageNumber === views.length) {
+
+                        document.querySelectorAll('div.textLayer').forEach(div => {
+                            // Overlay transparent img tag on the page for catching drag annotations
+                            div.classList.add("pdf-annotation-overlay");
+                            let img = document.createElement('img')
+                            img.src = ''
+                            img.classList.add('pdf-annotation-image')
+                            img.draggable = true
+                            div.insertBefore(img, div.firstChild);
+                        });
+
                         let nbBundle = window.location.host.includes('127.0.0.1') ? "https://127.0.0.1:3001/js/bundle.js" : window.location.protocol + "//" + window.location.host + "/client/js/bundle.js"
                         let s = document.createElement('script'); s.src = nbBundle; document.body.append(s);
                         document.getElementById("loadingNB").remove()
